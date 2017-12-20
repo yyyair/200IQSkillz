@@ -1,5 +1,20 @@
-import math
-h = lambda ATK, DEF, OBJ: ATK * DEF * math.atan(OBJ)
+from pirates import *
+from Roles import *
+
+class Oracle:
+    # Magic constant, should work
+    m_func = lambda x, y, z: x*y*z
+
+    def __init__(self, game):
+        self.game = game
+
+    # Assigns each pirate a role
+    def assign_roles(self, phandle):
+        items = []
+        for pirate in phandle.get_all_my_pirates():
+            items += [role(pirate) for role in RoleList]
+        return items
+
 
 class KnapsackObject:
     def __init__(self, value, weight, type):
@@ -8,10 +23,14 @@ class KnapsackObject:
         self.type = type
 
     def efficiency(self):
-        return h(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
+        return Oracle.m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
 
     def __str__(self):
         return "{" + str(self.value) + "," + str(self.weight) + "," +  str(self.efficiency())+"}"
+
+class PirateMCKP(IRole, KnapsackObject):
+    def efficiency(self):
+        return Oracle.m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
 
 
 """
@@ -58,16 +77,6 @@ def choose_roles(items, current):
 
 
 def sort(nums):
-    return quicksort(nums)
-    pass
-
-def quicksort(nums):
     nums = sorted(nums, key=lambda obj: obj.efficiency(), reverse=True)
     return nums
-    pass
 
-items = [ KnapsackObject(i**2 if i != 3 else 0, [i+2, math.exp(i), i if i==3 else 0], i%4) for i in range(1,20)]
-print [str(item) for item in items]
-#print knapsack(items, [32,4])
-strat = choose_roles(items, [])
-print [ str(item) for item in strat]

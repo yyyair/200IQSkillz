@@ -1,5 +1,6 @@
 
 from pirates import *
+#from Roles import Worker
 
 class SmartPirate:
 
@@ -13,15 +14,24 @@ class SmartPirate:
         self.last_turn = -1
         self.waypoints = []
 
+        self.movement_mode = "DEST"  # DEST means moves to a destination, TARGET means moves to a target
+        self.target = None
+
     # Attempts to move the pirate towards its current set destination
     def move(self):
         if len(self.waypoints)==0: return
+        # Check if at current destination
+        if self._pirate.get_location() == (self.waypoints[-1]):
+            self.remove_dest()
 
+        # Check if theres a destination
+        if len(self.waypoints)==0: return
+
+        # Check if can move
         if self.last_turn != self._game.turn:
             self._pirate.sail(self.waypoints[-1])
             self.last_turn = self._game.turn
-        if self._pirate.get_location() == (self.waypoints[-1]):
-            self.remove_dest()
+
 
     # Adds a destination for the queue
     def add_dest(self, dest):
@@ -44,6 +54,8 @@ class SmartPirate:
                     return SmartPirate.ERROR_PIRATE_PUSHED_TOO_FAR
             else:
                 return SmartPirate.ERROR_PIRATE_NOT_IN_PUSH_RANGE
+
+
 
 
 
@@ -73,7 +85,7 @@ class PirateGroup:
 
     def move(self):
         for pirate in self.pirates:
-            pirate.move("sdf")
+            pirate.move()
 
     def __str__(self):
         return str(self.pirates)
@@ -85,21 +97,38 @@ class PirateHandler:
         self.groups = []
         self._game = game
         for pirate in game.get_all_my_pirates():
-            group = None
             group = PirateGroup(pirate.id, [])
-            self._game.debug(group.pirates)
             spirate = SmartPirate(pirate, self._game)
             group.add(spirate)
             self.groups.append(group)
 
+
+
     def assign_roles(self, game):
         pass
+
+    def get_all_my_pirates(self):
+        pirates = []
+        for group in self.groups:
+            pirates += group.pirates
+        return pirates
 
     def update(self, game):
         for group in self.groups:
             # Remove dead groups
             if group.pirates == []:
                 pass
+
+    def get_pirate(self, id):
+        for group in self.groups:
+            for pirate in group:
+                if pirate.id == id:
+                    return pirate
+        return None
+
+    def set_pirate_role(self, pId, role):
+        pirate = self.get_pirate(pId)
+        #pirate = Worker(pirate, role)
 
     def debug(self, game):
         for group in self.groups:
