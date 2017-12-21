@@ -15,6 +15,45 @@ class Oracle:
             items += [role(pirate) for role in RoleList]
         return items
 
+class Tile:
+    def __init__(self, loc):
+        self.height = 100
+        self.width = 100
+        self.center = loc
+
+        # A list of our pirates assigned to defend the tile
+        self.defenders = []
+
+        # A list of our pirates assigned to attack the tile
+        self.attackers = []
+
+        # A list of enemy pirates and how effective they might be at defending the tile
+        self.e_defenders = []
+
+        # A list of enemy pirates and how effective they might be at attacking the tile
+        self.e_attackers = []
+
+        # Number of turns an enemy was in tile
+        # TODO: Implement A* for navigation through tiles with low enemy presence and low vulnerability
+        self.enemy_presence = 0
+
+    # Evaluates how vulnerable the tile is
+    def vulnerable(self, game_state):
+        pass
+
+    # Evaluates how important the tile is
+    def importance(self, game_state):
+        pass
+
+'''
+We divide the 6400x6400 map to a grid of 64x64 tiles, each tile is 100x100.
+'''
+class GameState:
+    def __init__(self, game):
+        self.board = game
+        self.defendedTiles = []
+        self.attackedTies = []
+
 
 class KnapsackObject:
     def __init__(self, value, weight, type):

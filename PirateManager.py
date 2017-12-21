@@ -1,7 +1,7 @@
 
 from pirates import *
-#from Roles import Worker
-
+from Roles import SmartPirate, Roles, Carrier
+'''
 class SmartPirate:
 
     ERROR_PIRATE_NOT_IN_PUSH_RANGE = 1
@@ -57,7 +57,7 @@ class SmartPirate:
 
 
 
-
+'''
 
 class PirateGroup:
     def __init__(self, _id, _list):
@@ -121,14 +121,17 @@ class PirateHandler:
 
     def get_pirate(self, id):
         for group in self.groups:
-            for pirate in group:
+            for pirate in group.pirates:
                 if pirate.id == id:
-                    return pirate
+                    return pirate, group
         return None
 
     def set_pirate_role(self, pId, role):
-        pirate = self.get_pirate(pId)
-        #pirate = Worker(pirate, role)
+        pirate, group = self.get_pirate(pId)
+        n_pirate = Roles[role]["_class"](pirate)
+        group.remove(pirate)
+        group.add(n_pirate)
+
 
     def debug(self, game):
         for group in self.groups:

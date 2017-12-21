@@ -11,10 +11,14 @@ def init(game):
     PHandle = PirateHandler(game)
     POracle = Oracle(game)
     # Test code
-    game.debug(PHandle.groups)
+    #game.debug(PHandle.groups)
+
     PHandle.groups[0].regroup(Location(0,0))
     PHandle.groups[0].regroup(Location(440,4400))
-    game.debug(POracle.assign_roles(PHandle))
+    PHandle.set_pirate_role(0, "carrier")
+    PHandle.debug(game)
+    #game.debug(POracle.assign_roles(PHandle))
+
 
 
 
