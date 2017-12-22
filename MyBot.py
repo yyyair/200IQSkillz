@@ -15,7 +15,11 @@ def init(game):
 
     PHandle.groups[0].regroup(Location(0,0))
     PHandle.groups[0].regroup(Location(440,4400))
-    PHandle.set_pirate_role(0, "carrier")
+    PHandle.set_pirate_role(0, "camper").set_camp(game.get_enemy_mothership().get_location())
+    PHandle.set_pirate_role(1, "camper").set_camp(game.get_enemy_mothership().get_location())
+    PHandle.set_pirate_role(2, "camper").set_camp(game.get_enemy_mothership().get_location())
+    PHandle.set_pirate_role(3, "carrier")
+    #PHandle.set_camp(Location(300,300))
     PHandle.debug(game)
     #game.debug(POracle.assign_roles(PHandle))
 
@@ -36,8 +40,7 @@ def do_turn(game):
     ''' CODE STARTS HERE '''
 
     game.debug(PHandle.groups)
-    for group in PHandle.groups:
-        group.move()
+    PHandle.update()
     # Execute game plan
     # something.update(
 

@@ -1,8 +1,11 @@
+from pirates import Location
+
 class SmartPirate:
 
     ERROR_PIRATE_NOT_IN_PUSH_RANGE = 1
     ERROR_PIRATE_PUSHED_TOO_FAR = 2
     ERROR_PUSH_COOLDOWN = 3
+    SUCCESS = 4
 
     def __init__(self, pirate, game):
         self._game = game
@@ -18,6 +21,11 @@ class SmartPirate:
 
     # Attempts to move the pirate towards its current set destination
     def move(self):
+        if self.movement_mode == "TARGET":
+            if self.last_turn != self._game.turn:
+                self._pirate.sail(self.target.get_location())
+                self.last_turn = self._game.turn
+
         if not len(self.waypoints): return
         # Check if at current destination
         if self._pirate.get_location() == (self.waypoints[self.sp]):
@@ -46,6 +54,9 @@ class SmartPirate:
             self.waypoints.remove(self.waypoints[-1])
             self.sp -= 1
 
+    def update(self):
+        self.move()
+
 
     def push(self, target, dest):
         if self.last_turn != self._game.turn:
@@ -54,6 +65,7 @@ class SmartPirate:
                     if self._pirate.push_reload_turns == 0:
                         self._pirate.push(target, dest)
                         self.last_turn = self._game.turn
+                        return SmartPirate.SUCCESS
 
                 else:
                     return SmartPirate.ERROR_PIRATE_PUSHED_TOO_FAR
@@ -83,6 +95,51 @@ class Worker(SmartPirate):
 
 
 class Camper(Worker):
+
+    IDLE = 1
+    CHASE = 2
+    REBASE = 3
+    PATROL = 4
+
+    def __init__(self, pirate):
+        Worker.__init__(self,pirate, Roles["camper"])
+        self.camp = None
+        self.mode = None
+        self.aggro_range = 1500
+        self.idle_range = 500
+        self.repeat = True
+
+    def update(self):
+        if self.mode == Camper.IDLE:
+            cap = self._game.get_enemy_capsule()
+            if cap.holder is not None and not self._pirate.push_reload_turns:
+                if self._pirate.in_range(cap.holder, self.aggro_range):
+                    self.target = cap.holder
+                    self.movement_mode = "TARGET"
+                    self.mode = Camper.CHASE
+        elif self.mode == Camper.CHASE:
+            if self.push(self.target, Location(0,0)) == SmartPirate.SUCCESS:
+                self.movement_mode = "DEST"
+                self.mode = Camper.REBASE
+        elif self.mode == Camper.REBASE:
+            if self.at_camp():
+                self.mode = Camper.IDLE
+            else:
+                print self.waypoints
+                self.move()
+        else:
+            self.mode = Camper.REBASE
+        print self.mode, self.movement_mode
+        SmartPirate.update(self)
+
+    def set_camp(self, location):
+        self.remove_dest()
+        self.add_dest(location)
+        self.camp = location
+
+    def at_camp(self):
+        return self._pirate.in_range(self.camp, self.idle_range)
+
     pass
 
 class Carrier(Worker):
@@ -91,6 +148,12 @@ class Carrier(Worker):
         self.repeat = True
         self.add_dest(pirate._game.get_my_mothership().get_location())
         self.add_dest(pirate._game.get_my_capsule().initial_location)
+
+    def update(self):
+        '''
+        code here
+        '''
+        SmartPirate.update(self)
 
 
 
@@ -101,7 +164,7 @@ class Escort(Worker):
 
 Roles = {
     "carrier":{"_class":Carrier, "IRole": IRole([1,1,1],[1,1,1], 0)},
-    "camper":{"_class":Escort, "IRole": IRole([1,1,1],[1,1,1], 0)},
+    "camper":{"_class":Camper, "IRole": IRole([1,1,1],[1,1,1], 0)},
     "escort":{"_class":Escort, "IRole": IRole([1,1,1],[1,1,1], 0)}
 }
 RoleList = [Carrier]

@@ -12,7 +12,7 @@ class Oracle:
     def assign_roles(self, phandle):
         items = []
         for pirate in phandle.get_all_my_pirates():
-            items += [role(pirate) for role in RoleList]
+            items += [PirateMCKPItem(role(pirate), pirate.id) for role in RoleList]
         return items
 
 class Tile:
@@ -55,7 +55,7 @@ class GameState:
         self.attackedTies = []
 
 
-class KnapsackObject:
+class KnapsackItem:
     def __init__(self, value, weight, type):
         self.value = value
         self.weight = weight
@@ -67,7 +67,11 @@ class KnapsackObject:
     def __str__(self):
         return "{" + str(self.value) + "," + str(self.weight) + "," +  str(self.efficiency())+"}"
 
-class PirateMCKP(IRole, KnapsackObject):
+class PirateMCKPItem(KnapsackItem):
+    def __init__(self, role, pId):
+        KnapsackItem.__init__(self, 0, role.value(), pId)
+        self.role = role
+
     def efficiency(self):
         return Oracle.m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
 
