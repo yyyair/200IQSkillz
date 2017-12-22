@@ -1,4 +1,5 @@
 from pirates import Location
+import math
 
 class SmartPirate:
 
@@ -102,7 +103,7 @@ class Camper(Worker):
     PATROL = 4
 
     def __init__(self, pirate):
-        Worker.__init__(self,pirate, Roles["camper"])
+        Worker.__init__(self,pirate, Roles["camper"]["IRole"])
         self.camp = None
         self.mode = None
         self.aggro_range = 1500
@@ -144,7 +145,7 @@ class Camper(Worker):
 
 class Carrier(Worker):
     def __init__(self, pirate):
-        Worker.__init__(self,pirate, Roles["carrier"])
+        Worker.__init__(self,pirate, Roles["carrier"]["IRole"])
         self.repeat = True
         self.add_dest(pirate._game.get_my_mothership().get_location())
         self.add_dest(pirate._game.get_my_capsule().initial_location)
@@ -160,12 +161,22 @@ class Carrier(Worker):
 
 
 class Escort(Worker):
-    pass
+    def __init__(self, pirate):
+        Worker.__init__(self,pirate, Roles["escort"]["IRole"])
+        self.repeat = True
+        self.add_dest(pirate._game.get_my_mothership().get_location())
+        self.add_dest(pirate._game.get_my_capsule().initial_location)
+
+    def update(self):
+        '''
+        code here
+        '''
+        SmartPirate.update(self)
 
 Roles = {
-    "carrier":{"_class":Carrier, "IRole": IRole([1,1,1],[1,1,1], 0)},
-    "camper":{"_class":Camper, "IRole": IRole([1,1,1],[1,1,1], 0)},
-    "escort":{"_class":Escort, "IRole": IRole([1,1,1],[1,1,1], 0)}
+    "carrier":{"_class":Carrier, "IRole": IRole([10,1,50],[1,1,1], "carrier")},
+    "camper":{"_class":Camper, "IRole": IRole([30,15,0],[1,1,1], "camper")},
+    "escort":{"_class":Escort, "IRole": IRole([15,30,0],[1,1,1], "escort")}
 }
-RoleList = [Carrier]
+RoleList = [Carrier, Camper, Escort]
 

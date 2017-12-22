@@ -1,6 +1,7 @@
 from pirates import *
 from Roles import *
-
+import math
+m_func = lambda x, y, z: x*y*z
 class Oracle:
     # Magic constant, should work
     m_func = lambda x, y, z: x*y*z
@@ -13,7 +14,8 @@ class Oracle:
         items = []
         for pirate in phandle.get_all_my_pirates():
             items += [PirateMCKPItem(role(pirate), pirate.id) for role in RoleList]
-        return items
+        return choose_roles(items, [])
+
 
 class Tile:
     def __init__(self, loc):
@@ -62,18 +64,19 @@ class KnapsackItem:
         self.type = type
 
     def efficiency(self):
-        return Oracle.m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
+        return m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
 
     def __str__(self):
         return "{" + str(self.value) + "," + str(self.weight) + "," +  str(self.efficiency())+"}"
 
 class PirateMCKPItem(KnapsackItem):
     def __init__(self, role, pId):
-        KnapsackItem.__init__(self, 0, role.value(), pId)
+        KnapsackItem.__init__(self, 0, role.role.value(), pId)
         self.role = role
+        self.name = role.role.roleId
 
     def efficiency(self):
-        return Oracle.m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
+        return m_func(self.weight[0], self.weight[1], self.weight[2])/float(sum(self.weight))
 
 
 """
