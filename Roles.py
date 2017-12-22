@@ -1,6 +1,15 @@
+'''
+File containing all classes related to role implementation. To create a new role:
+1. Create a class that extends Worker
+2. Add the class to RoleList and Roles
+3. Add atributes and methods
+4. Override update() to add logic
+5. Adjust effectiveness stats and rewards/punishments (*)
+
+*not fully implemented yet
+'''
 from pirates import Location
 import math
-
 class SmartPirate:
 
     ERROR_PIRATE_NOT_IN_PUSH_RANGE = 1
@@ -12,12 +21,17 @@ class SmartPirate:
         self._game = game
         self._pirate = pirate
         self.id = self._pirate.id
+        # Last turn pirate did a legal action
         self.last_turn = -1
-        self.waypoints = []
 
-        self.movement_mode = "DEST"  # DEST means moves to a destination, TARGET means moves to a target
+        self.waypoints = []
+        # DEST means moves to a destination, TARGET means moves to a target
+        self.movement_mode = "DEST"
+        # Target to chase after
         self.target = None
+        # If set to True, pirate will cycle waypoints instead of queueing them
         self.repeat = False
+        # Waypoint stack pointer
         self.sp = -1
 
     # Attempts to move the pirate towards its current set destination
@@ -110,6 +124,8 @@ class Camper(Worker):
         self.idle_range = 500
         self.repeat = True
 
+        self.set_camp(self._game.get_enemy_mothership().get_location())
+
     def update(self):
         if self.mode == Camper.IDLE:
             cap = self._game.get_enemy_capsule()
@@ -175,7 +191,7 @@ class Escort(Worker):
 
 Roles = {
     "carrier":{"_class":Carrier, "IRole": IRole([10,1,50],[1,1,1], "carrier")},
-    "camper":{"_class":Camper, "IRole": IRole([30,15,0],[1,1,1], "camper")},
+    "camper":{"_class":Camper, "IRole": IRole([30,20,0],[1,1,1], "camper")},
     "escort":{"_class":Escort, "IRole": IRole([15,30,0],[1,1,1], "escort")}
 }
 RoleList = [Carrier, Camper, Escort]

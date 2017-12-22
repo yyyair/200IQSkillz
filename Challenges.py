@@ -1,5 +1,5 @@
 ChallengeList = []
 
 def do_challenge(game):
-    # Ron's messy code goes here
+    # Ron's code goes here
     pass

@@ -71,6 +71,14 @@ class PirateHandler:
                     return pirate, group
         return None
 
+    def get_workers(self, role):
+        workers = []
+        for pirate in self.get_all_my_pirates():
+            if pirate.role is not None:
+                if pirate.role.roleId == role:
+                    workers.append(pirate)
+        return workers
+
     def set_pirate_role(self, pId, role):
         pirate, group = self.get_pirate(pId)
         n_pirate = Roles[role]["_class"](pirate)

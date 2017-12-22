@@ -14,7 +14,13 @@ class Oracle:
         items = []
         for pirate in phandle.get_all_my_pirates():
             items += [PirateMCKPItem(role(pirate), pirate.id) for role in RoleList]
-        return choose_roles(items, [])
+
+        assignment = choose_roles(items, [])
+
+        for item in assignment:
+            phandle.set_pirate_role(item.role.id, item.name)
+
+        return assignment
 
 
 class Tile:
