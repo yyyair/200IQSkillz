@@ -3,6 +3,16 @@ from PirateManager import PirateHandler
 from Challenges import ChallengeList, do_challenge
 from Oracle import Oracle
 
+# TODO: Improve teamwork between pirates
+# TODO: Implement advanced game state object (defended tiles, easy targets etc.)
+# TODO: Implement adaptation algorithm (reward useful pirates, replace use less ones, estimate effectiveness)
+# TODO: Implement tile system (A* navigation)
+# TODO: Tweak magic constants
+# TODO: Try to find optimal constants using a genetic algorithm  (?)
+# TODO: Add more roles (Ganker, Catapulter, Bulldozer, Distractor)
+# TODO: Implement new game mechanics
+# TODO: Win some games
+
 PHandle = None
 POracle = None
 def init(game):
@@ -21,7 +31,8 @@ def init(game):
     PHandle.set_pirate_role(3, "carrier")
     #PHandle.set_camp(Location(300,300))'''
     PHandle.debug(game)
-    game.debug([i.name for i in POracle.assign_roles(PHandle )])
+    roles = POracle.assign_roles(PHandle )
+    game.debug([i.name for i in roles])
 
 
 
